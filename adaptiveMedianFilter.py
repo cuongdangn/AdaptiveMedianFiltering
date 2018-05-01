@@ -10,21 +10,22 @@ from PIL import Image
 #path = "tiger.png" 
 #path = "cat.png"
 #path = "horse.png"
-path = "input/ship.png"
+#path = "tiger2.png"
+path = "input/Ship.png"
 img = Image.open(path)
-img = img.convert('LA');
+img = img.convert('LA')
 width, height = img.size
 newimg = img.copy()
 
 def getName():
-	name = '';
+	name = ''
 	for i in range(6,len(path)):
 		name = name+path[i]
 	#print(name)
 	return name
 def AdaptiveMedianFilter(sMax):
 	filterSize = 3
-	borderSize = sMax // 2;
+	borderSize = sMax // 2
 	imgMax = img.getpixel((0,0))
 	mid = (filterSize*filterSize)//2
 	for i in range(width):
@@ -60,31 +61,30 @@ def AdaptiveMedianFilter(sMax):
 
 	        newimg.putpixel((i,j),(result))
 
-def renoiseInBorder():
-	borderSize = 1
+def renoiseInBorder(borderSize):
 	for i in range(1,width):
 	    for j in range(borderSize):
-	        newimg.putpixel((i,j),newimg.getpixel((i,borderSize)));
-
-	for i in range(1,width):
-	    for j in range(borderSize):
-	        newimg.putpixel((i,height-j-1),newimg.getpixel((i,height-borderSize-1)));
-
+	        newimg.putpixel((i,j),newimg.getpixel((i,borderSize)))
+	        newimg.putpixel((i,height-j-1),newimg.getpixel((i,height-borderSize-1)))
+			
 	for j in range(height):
 	    for i in range(borderSize):
-	        newimg.putpixel((i,j),newimg.getpixel((borderSize,j)));
+	        newimg.putpixel((i,j),newimg.getpixel((borderSize,j)))
+	        newimg.putpixel((width -i-1,j),newimg.getpixel((width-borderSize-1,j)))
 	        
-	for j in range(height):
-	    for i in range(borderSize):
-	        newimg.putpixel((width - i-1,j),newimg.getpixel((width-borderSize-1,j)));
 
 
 # main
-img.show()
-for i in range(9,1,-2):
+img.show("input")
+for i in range(7,1,-2):
 	img = newimg.copy()
 	#print(i)
 	AdaptiveMedianFilter(i)
-renoiseInBorder()
-newimg.show()
+	if i==5:
+		renoiseInBorder(2)
+
+
+
+renoiseInBorder(1)
+newimg.show("output")
 newimg.save("output/output_"+getName())
